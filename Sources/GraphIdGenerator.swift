@@ -20,6 +20,6 @@ public func generateGraphUUID(type: Graphable.Type) throws -> String {
 public func generateGraphPostgreSQLID(type: Graphable.Type) throws -> String {
     let query = "SELECT nextval('\(type.entity)_id_seq')"
     let result = try type.database?.driver.raw(query)
-    guard let id = result?["nextval"]?.string else { throw GraphError.noId }
+    guard let id = result?[0]?["nextval"]?.string else { throw GraphError.noId }
     return id
 }
