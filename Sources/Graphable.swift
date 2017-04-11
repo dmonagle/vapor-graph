@@ -17,7 +17,7 @@ public protocol GraphSynchronizable {
 
 extension GraphSynchronizable {
     /// Default implementation of `sync(force)` which defaults `force` to `false`
-    func sync() throws {
+    public func sync() throws {
         try sync(force: false)
     }
 }
