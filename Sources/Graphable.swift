@@ -12,6 +12,14 @@ import Foundation
 
 public protocol GraphSynchronizable {
     func needsSync() throws -> Bool
+    func sync(force: Bool) throws
+}
+
+extension GraphSynchronizable {
+    /// Default implementation of `sync(force)` which defaults `force` to `false`
+    func sync() throws {
+        try sync(force: false)
+    }
 }
 
 /**
@@ -73,6 +81,19 @@ extension Graphable {
         guard let snapshot = self.snapshot else { return true }
         let currentState = try self.makeNode(context: GraphContext.snapshot)
         return currentState != snapshot
+    }
+    
+    public func sync(force: Bool) throws {
+        if try (force || needsSync()) {
+            do {
+                var model = self
+                try model.save()
+                try model.takeSnapshot()
+            }
+            catch (let error) {
+                throw(GraphError.sync(self, error))
+            }
+        }
     }
 }
 

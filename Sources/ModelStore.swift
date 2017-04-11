@@ -7,10 +7,11 @@
 //
 
 import Fluent
+import Foundation
 
 /// Stores a single type of Graphable
-public class GraphModelStore {
-    private var _models : [String: Entity] = [:]
+public class GraphModelStore : GraphSynchronizable {
+    private var _models : [String: Graphable] = [:]
     
     public init() {
         
@@ -34,6 +35,23 @@ public class GraphModelStore {
     
     public var count : Int {
         return _models.count
+    }
+    
+    public func needsSync() throws -> Bool {
+        var result = false
+        try _models.forEach { id, model in
+            if (try model.needsSync()) {
+                result = true
+                return
+            }
+        }
+        return result
+    }
+    
+    public func sync(force: Bool) throws {
+        try _models.forEach { id, model in
+            try model.sync(force: force)
+        }
     }
 }
 

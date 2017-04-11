@@ -12,4 +12,5 @@ public enum GraphError : Error {
     case noId
     case wrongType
     case noSnapshot
+    case sync(Graphable, Error)
 }
