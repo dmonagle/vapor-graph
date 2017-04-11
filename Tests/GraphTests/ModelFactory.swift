@@ -6,44 +6,83 @@
 //
 //
 
-import Graph
+import VaporGraph
 import Fluent
 import Vapor
+import Foundation
 
 final class Person : Graphable {
-    /**
-     The revert method should undo any actions
-     caused by the prepare method.
-     
-     If this is impossible, the `PreparationError.revertImpossible`
-     error should be thrown.
-     */
-    public static func revert(_ database: Database) throws {
-    }
+    public var graph: Graph? = nil
+    public var snapshot: Node?
+    public var id : Node? = nil
+
+    // MARK: Properties
+    public var name : String = ""
+    public var rating : Int = 0
+    public var favoriteColor: String? = nil
+    public var updatedAt: Date?
     
-    /**
-     The prepare method should call any methods
-     it needs on the database to prepare.
-     */
-    public static func prepare(_ database: Database) throws {
-    }
-    
-    func makeNode(context: Context) throws -> Node {
-        return try Node(node: [
-            "id": id,
-            ])
-    }
-    
-    var graph: Graph? = nil
-    
-    var id : Node? = nil
-    var name : String = ""
-    
-    init(named name: String) {
+    init(named name: String, withFavoriteColor color: String? = nil, rated: Int = 0) {
         self.name = name
+        self.favoriteColor = color
+        self.rating = rated
     }
     
     init(node: Node, in context: Context) throws {
+        try deserialize(node: node, in: context)
+    }
+}
+
+// MARK: Factories
+
+extension Person {
+    static var Tommy : Person {
+        get {
+            return Person(named: "Tommy", withFavoriteColor: "Green", rated: 10)
+        }
+    }
+    static var Kimberly : Person {
+        get {
+            return Person(named: "Kimberly", withFavoriteColor: "Pink", rated: 5)
+        }
+    }
+}
+
+
+// MARK: Serialization
+extension Person {
+    func deserialize(node: Node, in context: Context) throws {
+        id = try node.extract("id")
+        name = try node.extract("name")
+        favoriteColor = try node.extract("favoriteColor")
+        rating = try node.extract("rating")
+    }
+    
+    func makeNode(context: Context) throws -> Node {
+        var serialized = try Node(node: [
+            "id": id,
+            "name": name,
+            "favoriteColor": favoriteColor,
+            "rating": rating
+        ])
+        
+        // Don't serialize updatedAt if we are serializing for the graph.
+        if (!context.isGraph()) {
+            updatedAt = Date()
+            serialized["updatedAt"] = Node(updatedAt!.description)
+        }
+        
+        return serialized
+    }
+    
+}
+
+// MARK: Preparations
+extension Person {
+    public static func revert(_ database: Database) throws {
+    }
+    
+    public static func prepare(_ database: Database) throws {
     }
 }
 

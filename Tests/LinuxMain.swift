@@ -3,5 +3,6 @@ import XCTest
 
 XCTMain([
      testCase(GraphTests.allTests),
+     testCase(GraphableTests.allTests),
      testCase(GraphModelStoreTests.allTests),
 ])

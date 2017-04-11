@@ -8,7 +8,7 @@
 
 import XCTest
 import Fluent
-@testable import Graph
+@testable import VaporGraph
 
 class GraphModelStoreTests: XCTestCase {
     func testStoreAndRetrieve() throws {
