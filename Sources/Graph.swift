@@ -25,6 +25,9 @@ public class Graph : GraphSynchronizable {
         case replaceReference
     }
     
+    public init() {
+    }
+    
     private var _store : [String: GraphModelStore] = [:]
 
     public func store<T>(forType: T.Type) -> GraphModelStore? where T : Entity {
