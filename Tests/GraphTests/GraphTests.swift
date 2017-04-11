@@ -23,6 +23,15 @@ class GraphTests: XCTestCase {
         XCTAssert(tommy === retrieved)
     }
     
+    func testStoreWithGeneratedId() throws {
+        let graph = Graph()
+        let tommy = Person.Tommy
+        
+        XCTAssertNil(tommy.id)
+        try _ = graph.inject(tommy)
+        XCTAssertNotNil(tommy.id)
+    }
+    
     func testInjectWithRebase() throws {
         let graph = Graph()
 
@@ -47,6 +56,8 @@ class GraphTests: XCTestCase {
     static var allTests : [(String, (GraphTests) -> () throws -> Void)] {
         return [
             ("testStoreAndRetrieve", testStoreAndRetrieve),
+            ("testStoreWithGeneratedId", testStoreWithGeneratedId),
+            ("testInjectWithRebase", testInjectWithRebase),
         ]
     }
 }
