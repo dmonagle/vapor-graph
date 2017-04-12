@@ -120,10 +120,15 @@ public class Graph : GraphSynchronizable {
     }
     
     /// Looks for the given id in the Graph. If it's not present it will search the database for it and, if found, add it to the Graph
-    func find<T : Graphable>(id: NodeRepresentable) throws -> T? {
+    func find<T : Graphable>(id: NodeRepresentable, duplicateResolution: DuplicateResolution = .rebase) throws -> T? {
         if let result : T = try retrieve(id: id) { return result }
         guard let result = try T.find(id) else { return nil }
-        return try self.inject(result, takeSnapshot: true)
+        return try self.inject(result, duplicateResolution: duplicateResolution, takeSnapshot: true)
+    }
+    
+    /// Convenience: Queries the database for the model with the filter value and returns the result of injecting them into the graph with the given duplication resolution
+    func findMany<T>(field: String, value: NodeRepresentable, duplicateResolution: DuplicateResolution = .rebase) throws -> [T] where T : Graphable {
+        return try inject(T.query().filter(field, value).all(), duplicateResolution: duplicateResolution, takeSnapshot: true)
     }
     
     public func clear() {

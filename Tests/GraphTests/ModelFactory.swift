@@ -14,9 +14,9 @@ import Foundation
 final class Person : Graphable {
     static var graphIdGenerator: GraphIdGenerator? = generateGraphUUID
 
-    public var graph: Graph? = nil
+    public var graph: Graph?
     public var snapshot: Node?
-    public var id : Node? = nil
+    public var id : Node?
 
     // MARK: Properties
     public var name : String = ""

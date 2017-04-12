@@ -7,6 +7,7 @@ import Vapor
 class GraphTests: XCTestCase {
     func testStoreAndRetrieve() throws {
         let graph = Graph()
+        
         let tommy = Person.Tommy
         tommy.id = 1
         

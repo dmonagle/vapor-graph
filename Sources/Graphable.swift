@@ -41,25 +41,30 @@ public protocol Graphable : class, Model, GraphSynchronizable {
 /// Extension to add snapshot functions to a graphable
 extension Graphable {
     /// Takes a snapshot of the current state using the GraphContext.snapshot context
-    func takeSnapshot() throws {
+    public func takeSnapshot() throws {
         try snapshot = self.makeNode(context: GraphContext.snapshot)
     }
     
     /// Returns true if a snapshot is present.
-    var hasSnapshot: Bool {
+    public var hasSnapshot: Bool {
         get {
             return snapshot != nil
         }
     }
     
-    func diffFromSnapshot() throws -> Node? {
+    /// Removes the snapshot of this model
+    public func removeSnapshot() {
+        snapshot = nil
+    }
+    
+    public func diffFromSnapshot() throws -> Node? {
         guard let snapshot = self.snapshot else { return nil }
         let selfNode = try makeNode(context: GraphContext.snapshot)
         let differences = try selfNode.diff(from: snapshot)
         return differences
     }
     
-    func rebase(from model: Graphable, updateSnapshot: Bool = true) throws {
+    public func rebase(from model: Graphable, updateSnapshot: Bool = true) throws {
         // If there is no snapshot, assume that everything is changed and therefor do nothing
         if (!hasSnapshot) { return }
         
@@ -70,7 +75,7 @@ extension Graphable {
         }
     }
     
-    func revertToSnapshot() throws {
+    public func revertToSnapshot() throws {
         guard let snap = snapshot else { throw GraphError.noSnapshot }
         try self.deserialize(node: snap, in: GraphContext.snapshot)
     }
@@ -83,6 +88,8 @@ extension Graphable {
         return currentState != snapshot
     }
     
+    
+    /// Syncs this model with it's underlying database (if requried or forced) and takes a snapshot
     public func sync(force: Bool) throws {
         if try (force || needsSync()) {
             do {

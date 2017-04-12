@@ -14,7 +14,28 @@ public class GraphModelStore : GraphSynchronizable {
     private var _models : [String: Graphable] = [:]
     
     public init() {
+    }
+    
+    /// Returns all the models in the store that can be cast to T and pass the given filter function
+    public func filter<T>(_ filterFunc: (T) -> Bool) throws -> [T] where T: Graphable {
+        var results: [T] = []
         
+        _models.forEach { model in
+            if let m = model as? T {
+                if (filterFunc(m)) {
+                    results.append(m)
+                }
+            }
+        }
+        
+        return results
+    }
+
+    /// Returns all the models in the store that can be cast to T
+    public func all<T>() throws -> [T] where T: Graphable {
+        return try filter { _ in
+            return true
+        }
     }
     
     public func add(_ model : Graphable) throws {
