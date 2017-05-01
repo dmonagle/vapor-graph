@@ -16,7 +16,7 @@ public class Graph : GraphSynchronizable {
      Ignores the incoming record and return a reference to the existing one
      
      # replaceReference
-     Replace the current reference with the new one. This could leave other classes with references to a model that no longer exists int he graph. Not really recommended
+     Replace the current reference with the new one. This could leave other classes with references to a model that no longer exists in the graph. Not really recommended
     */
     public enum DuplicateResolution {
         case rebase
