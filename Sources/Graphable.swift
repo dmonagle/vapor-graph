@@ -33,7 +33,7 @@ public protocol Graphable : class, Model, GraphSynchronizable {
     var graph : Graph? { get set }
     var snapshot : Node? { get set }
     
-    func deserialize(node: Node, in context: Context) throws
+    func deserialize(node: Node, context: Context) throws
 }
 
 // MARK: Snapshots
@@ -70,14 +70,14 @@ extension Graphable {
         
         let modelData = try model.makeNode(context: GraphContext.snapshot)
         if let changes = try self.diffFromSnapshot(), let mergedData = try modelData.merge(with: changes) {
-            try deserialize(node: mergedData, in: GraphContext.snapshot)
+            try deserialize(node: mergedData, context: GraphContext.snapshot)
             if (updateSnapshot) { snapshot = modelData }
         }
     }
     
     public func revertToSnapshot() throws {
         guard let snap = snapshot else { throw GraphError.noSnapshot }
-        try self.deserialize(node: snap, in: GraphContext.snapshot)
+        try self.deserialize(node: snap, context: GraphContext.snapshot)
     }
 
     /// Checks the current state of the model data against the snapshot if it exists

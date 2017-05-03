@@ -31,7 +31,7 @@ final class Person : Graphable {
     }
     
     init(node: Node, in context: Context) throws {
-        try deserialize(node: node, in: context)
+        try deserialize(node: node, context: context)
     }
 }
 
@@ -53,7 +53,7 @@ extension Person {
 
 // MARK: Serialization
 extension Person {
-    func deserialize(node: Node, in context: Context) throws {
+    func deserialize(node: Node, context: Context) throws {
         id = try node.extract("id")
         name = try node.extract("name")
         favoriteColor = try node.extract("favoriteColor")
