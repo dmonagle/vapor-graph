@@ -23,7 +23,7 @@ class GraphModelStoreTests: XCTestCase {
         
         XCTAssertEqual(store.count, 1)
         
-        let retrieved : Person? = try store.retrieve(id: Node(1))
+        let retrieved : Person? = store.retrieve(id: 1)
         XCTAssertNotNil(retrieved)
         XCTAssertEqual(retrieved?.name, "Dave")
     }

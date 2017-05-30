@@ -8,13 +8,13 @@
 
 import Node
 
-extension Node {
+extension StructuredData {
     /// Returns a structure outlining the differences between self and the given reference node
-    func diff(from referenceNode: Node) throws -> Node? {
+    func diff(from referenceStruct: StructuredData) throws -> StructuredData? {
         // Make sure both nodes are objects
-        switch (self, referenceNode) {
+        switch (self, referenceStruct) {
         case let (.object(changed), .object(reference)):
-            var result : Node = [:]
+            var result = StructuredData.object([:])
             
             // Check each key in the changed node for differences
             try changed.forEach { changedKey, changedValue in
@@ -29,12 +29,12 @@ extension Node {
                     result[changedKey] = changedValue
                 }
             }
-
+            
             // Check each key in the reference node for keys that have been removed
             reference.forEach { referenceKey, _ in
                 if let _ = changed[referenceKey] {}
                 else {
-                    result[referenceKey] = Node.null
+                    result[referenceKey] = StructuredData.null
                 }
             }
             
@@ -60,5 +60,12 @@ extension Node {
         default:
             return self
         }
+    }
+}
+
+extension StructuredDataWrapper {
+    func diff<T : StructuredDataWrapper>(from referenceWrapper: T) throws -> T? {
+        guard let returnValue = try self.wrapped.diff(from: referenceWrapper.wrapped) else { return nil }
+        return T(returnValue)
     }
 }

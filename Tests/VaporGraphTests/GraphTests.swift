@@ -18,7 +18,7 @@ class GraphTests: XCTestCase {
         
         XCTAssertNotNil(graph.store(forType: Person.self))
         
-        let retrieved : Person? = try graph.retrieve(id: Node(1))
+        let retrieved : Person? = graph.retrieve(id: 1)
         XCTAssertNotNil(retrieved)
         XCTAssertEqual(retrieved?.name, "Tommy")
         XCTAssert(tommy === retrieved)
