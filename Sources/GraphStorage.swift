@@ -22,6 +22,15 @@ public struct GraphSnapshot: StructuredDataWrapper {
 public struct GraphStorage {
     public var graph: Graph?
     public var snapshot: GraphSnapshot?
+    public var context: Context {
+        get {
+            return _context ?? (graph?.context ?? emptyContext)
+        }
+        set {
+            _context = newValue
+        }
+    }
+    private var _context : Context?
     
     public init() {}
 }

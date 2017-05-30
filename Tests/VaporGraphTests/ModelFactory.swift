@@ -82,7 +82,7 @@ extension Person {
     }
     
     func makeRow() throws -> Row {
-        return try Row(makeNode(in: nil))
+        return try Row(makeNode(in: graphStorage.context))
     }
     
 }

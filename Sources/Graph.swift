@@ -29,6 +29,7 @@ public class Graph : GraphSynchronizable {
     }
     
     private var _store : [String: GraphModelStore] = [:]
+    public var context : Context = emptyContext
 
     public func store<T>(forType: T.Type) -> GraphModelStore? where T : Entity {
         return _store[forType.entity]
