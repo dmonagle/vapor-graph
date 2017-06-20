@@ -9,9 +9,15 @@
 import Fluent
 import Foundation
 
+extension Identifier : Hashable {
+    public var hashValue: Int {
+        return "\(self)".hashValue
+    }
+}
+
 /// Stores a single type of Graphable
 public class GraphModelStore : GraphSynchronizable {
-    private var _models : [String: Graphable] = [:]
+    private var _models : [Identifier: Graphable] = [:]
     
     public init() {
     }
@@ -39,16 +45,11 @@ public class GraphModelStore : GraphSynchronizable {
     }
     
     public func add(_ model : Graphable) throws {
-        guard let id = model.id?.string else { throw GraphError.noId }
+        guard let id = model.id else { throw GraphError.noId }
         _models[id] = model
     }
     
-    public func retrieve<T: Graphable>(id: Node) throws -> T? {
-        guard let id = id.string else { throw GraphError.noId }
-        return retrieve(id: id)
-    }
-    
-    public func retrieve<T: Graphable>(id: String) -> T? {
+    public func retrieve<T: Graphable>(id: Identifier) -> T? {
         guard let graphable = _models[id] else { return nil }
         guard let model = (graphable as? T) else { return nil }
         return model

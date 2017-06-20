@@ -12,11 +12,10 @@ import Vapor
 import Foundation
 
 final class Person : Graphable {
-    static var graphIdGenerator: GraphIdGenerator? = generateGraphUUID
+    var graphStorage: GraphStorage = GraphStorage()
+    let storage: Storage = Storage()
 
-    public var graph: Graph?
-    public var snapshot: Node?
-    public var id : Node?
+    static var graphIdGenerator: GraphIdGenerator? = generateGraphUUID
 
     // MARK: Properties
     public var name : String = ""
@@ -31,7 +30,11 @@ final class Person : Graphable {
     }
     
     init(node: Node, in context: Context) throws {
-        try deserialize(node: node, context: context)
+        try deserialize(node: node, in: context)
+    }
+
+    init(row: Row) throws {
+        try deserialize(node: Node(row))
     }
 }
 
@@ -53,28 +56,33 @@ extension Person {
 
 // MARK: Serialization
 extension Person {
-    func deserialize(node: Node, context: Context) throws {
-        id = try node.extract("id")
-        name = try node.extract("name")
-        favoriteColor = try node.extract("favoriteColor")
-        rating = try node.extract("rating")
+    func deserialize(node: NodeRepresentable, in context: Context? = emptyContext) throws {
+        let node = try node.makeNode(in: nil)
+        id = try node.get("id")
+        name = try node.get("name")
+        favoriteColor = try node.get("favoriteColor")
+        rating = try node.get("rating")
     }
     
-    func makeNode(context: Context) throws -> Node {
+    func makeNode(in context: Context?) throws -> Node {
         var serialized = try Node(node: [
-            "id": id,
+            "id": id ?? nil,
             "name": name,
-            "favoriteColor": favoriteColor,
+            "favoriteColor": favoriteColor ?? Node.null,
             "rating": rating
         ])
         
         // Don't serialize updatedAt if we are serializing for the graph.
-        if (!context.isGraph()) {
+        if (context?.isGraph() == true) {
             updatedAt = Date()
             serialized["updatedAt"] = Node(updatedAt!.description)
         }
         
         return serialized
+    }
+    
+    func makeRow() throws -> Row {
+        return try Row(makeNode(in: graphStorage.context))
     }
     
 }

@@ -1,5 +1,5 @@
 import Vapor
-import Fluent
+import FluentProvider
 import Foundation
 
 public class Graph : GraphSynchronizable {
@@ -29,6 +29,7 @@ public class Graph : GraphSynchronizable {
     }
     
     private var _store : [String: GraphModelStore] = [:]
+    public var context : Context = emptyContext
 
     public func store<T>(forType: T.Type) -> GraphModelStore? where T : Entity {
         return _store[forType.entity]
@@ -50,9 +51,9 @@ public class Graph : GraphSynchronizable {
             A reference to the injected model. This may not be the same as the reference passed in if the id was a duplicate of a model already in the graph.
      */
     public func inject<T>(_ model : T, duplicateResolution: DuplicateResolution = .rebase, takeSnapshot: Bool = false) throws -> T where T : Graphable{
-        let id : String
+        let id : Identifier
 
-        if let modelId = model.id?.string {
+        if let modelId = model.id {
             id = modelId
         }
         else {
@@ -60,8 +61,7 @@ public class Graph : GraphSynchronizable {
             id = try generator(T.self)
             
             // Add the generated id to the model
-            var m = model
-            m.id = Node(id)
+            model.id = Identifier(id)
         }
 
         let store = ensureStore(model: model)
@@ -75,7 +75,7 @@ public class Graph : GraphSynchronizable {
             case .keepExisting:
                 return existing
             case .deserialize:
-                try existing.deserialize(node: try model.makeNode(context: GraphContext.snapshot), context: GraphContext.snapshot)
+                try existing.deserialize(node: try model.makeNode(in: GraphContext.snapshot), in: GraphContext.snapshot)
                 if (takeSnapshot) { try model.takeSnapshot() }
                 return existing
             case .rebase:
@@ -108,28 +108,21 @@ public class Graph : GraphSynchronizable {
     }
     
     /// Retrieves an object from the Graph
-    func retrieve<T: Graphable>(id nodeId: NodeRepresentable) throws -> T? {
-        let node = try nodeId.makeNode()
-        guard let id = node.string else { throw GraphError.noId }
-        return retrieve(id: id)
-    }
-    
-    /// Retrieves an object from the Graph
-    func retrieve<T : Graphable>(id: String) -> T? {
+    func retrieve<T : Graphable>(id: Identifier) -> T? {
         let result : T? = _store[T.entity]?.retrieve(id: id)
         return result
     }
     
     /// Looks for the given id in the Graph. If it's not present it will search the database for it and, if found, add it to the Graph
-    func find<T : Graphable>(id: NodeRepresentable, duplicateResolution: DuplicateResolution = .rebase) throws -> T? {
-        if let result : T = try retrieve(id: id) { return result }
+    func find<T : Graphable>(id: Identifier, duplicateResolution: DuplicateResolution = .rebase) throws -> T? {
+        if let result : T = retrieve(id: id) { return result }
         guard let result = try T.find(id) else { return nil }
         return try self.inject(result, duplicateResolution: duplicateResolution, takeSnapshot: true)
     }
     
     /// Convenience: Queries the database for the model with the filter value and returns the result of injecting them into the graph with the given duplication resolution
     func findMany<T>(field: String, value: NodeRepresentable, duplicateResolution: DuplicateResolution = .rebase) throws -> [T] where T : Graphable {
-        return try inject(T.query().filter(field, value).all(), duplicateResolution: duplicateResolution, takeSnapshot: true)
+        return try inject(T.makeQuery().filter(field, value).all(), duplicateResolution: duplicateResolution, takeSnapshot: true)
     }
     
     public func clear() {
