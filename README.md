@@ -1,5 +1,7 @@
 # VaporGraph
 
+Vapor 2 addon to allow models to be stored in a Graph with change tracking, snapshots and the ability to call sync to allow all models to be synced back to the database together.
+
 When working with Vapor and Fluent and the application has many models, especially with relationships, you can run into some issues:
 
 * Two models loaded that refer to a parent will both query the database and get a different reference to (instance of) the parent record.
