@@ -49,6 +49,12 @@ public class GraphModelStore : GraphSynchronizable {
         _models[id] = model
     }
     
+    public func remove(_ model : Graphable) {
+        if let id = model.id {
+            _models.removeValue(forKey: id)
+        }
+    }
+    
     public func retrieve<T: Graphable>(id: Identifier) -> T? {
         guard let graphable = _models[id] else { return nil }
         guard let model = (graphable as? T) else { return nil }

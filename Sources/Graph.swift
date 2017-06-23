@@ -107,6 +107,12 @@ public class Graph : GraphSynchronizable {
         return results
     }
     
+    /// Removes a model from the graph. 
+    func remove<T : Graphable>(_ model : T) {
+        _store[T.entity]?.remove(model)
+        model.graph = nil
+    }
+    
     /// Retrieves an object from the Graph
     func retrieve<T : Graphable>(id: Identifier) -> T? {
         let result : T? = _store[T.entity]?.retrieve(id: id)

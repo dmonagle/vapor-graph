@@ -43,6 +43,24 @@ extension Graphable {
     }
 }
 
+// MARK: Deletable
+extension Graphable {
+    /// Marks the model for deletion on graph sync
+    public func graphDelete() {
+        graphStorage.deleted = true
+    }
+
+    /// Unmarks the model for deletion on graph sync
+    public func graphUndelete() {
+        graphStorage.deleted = false
+    }
+    
+    /// Returns true if model is set to be deleted by the graph
+    public var isGraphDeleted : Bool {
+        return graphStorage.deleted
+    }
+}
+
 // MARK: Snapshots
 
 /// Extension to add snapshot functions to a graphable
@@ -105,8 +123,14 @@ extension Graphable {
         if try (force || needsSync()) {
             do {
                 let model = self
-                try model.save()
-                try model.takeSnapshot()
+                if model.isGraphDeleted {
+                    try model.delete()
+                    model.graph?.remove(model) // Remove the model from the graph
+                }
+                else {
+                    try model.save()
+                    try model.takeSnapshot()
+                }
             }
             catch (let error) {
                 throw(GraphError.sync(self, error))

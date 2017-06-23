@@ -22,6 +22,9 @@ public struct GraphSnapshot: StructuredDataWrapper {
 public struct GraphStorage {
     public var graph: Graph?
     public var snapshot: GraphSnapshot?
+    public var deleted: Bool = false
+
+    /// Settable context which falls back to using the graph context
     public var context: Context {
         get {
             return _context ?? (graph?.context ?? emptyContext)
@@ -30,7 +33,8 @@ public struct GraphStorage {
             _context = newValue
         }
     }
-    private var _context : Context?
     
     public init() {}
+    
+    private var _context : Context?
 }
