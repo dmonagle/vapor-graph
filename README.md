@@ -31,7 +31,10 @@ class Person : Graphable {
     init(node: Node, in context: Context?) throws {
         try graphDeserialize(node: node, in: context)
     }
-}
+    
+    init(row: Row) throws {
+        try graphDeserialize(node: Node(row), in: GraphContext.row)
+    }}
 ```
 
 Note that each of the variables are optional so there is no need to initialise them in any way.

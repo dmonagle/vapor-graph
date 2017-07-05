@@ -34,7 +34,7 @@ final class Person : Graphable {
     }
 
     init(row: Row) throws {
-        try graphDeserialize(node: Node(row), in: GraphContext.storage)
+        try graphDeserialize(node: Node(row), in: GraphContext.row)
     }
 }
 

@@ -9,8 +9,8 @@
 import Vapor
 
 public enum GraphContext: Context {
-    case snapshot // For a snapshot
-    case storage  // For storage
+    case snapshot
+    case row
 }
 
 extension Context {
