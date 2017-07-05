@@ -19,10 +19,10 @@ The **Graphable** protocol allows your models to be stored in a Graph. It also i
 
 ```Swift
 class Person : Graphable {
-    static var graphIdGenerator: GraphIdGenerator?
+    public static var graphIdGenerator: GraphIdGenerator? = generateGraphUUID
 
-    public var graph: Graph?
-    public var snapshot: Node?
+    public let graphStorage: GraphStorage = GraphStorage()
+    public let storage: Storage = Storage()
 
     public func graphDeserialize(node: NodeRepresentable, in context: Context?) throws {
         ... 

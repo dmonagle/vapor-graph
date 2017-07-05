@@ -28,9 +28,9 @@ extension GraphSynchronizable {
     Through the Graphable extension,
 */
 public protocol Graphable : class, Model, GraphSynchronizable, NodeRepresentable {
-    static var graphIdGenerator : GraphIdGenerator? { get set }
+    static var graphIdGenerator : GraphIdGenerator? { get }
     
-    var graphStorage : GraphStorage { get set }
+    var graphStorage : GraphStorage { get }
     func graphDeserialize(node: NodeRepresentable, in: Context?) throws
 }
 

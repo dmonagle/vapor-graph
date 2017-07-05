@@ -19,7 +19,7 @@ public struct GraphSnapshot: StructuredDataWrapper {
     }
 }
 
-public struct GraphStorage {
+public final class GraphStorage {
     public var graph: Graph?
     public var snapshot: GraphSnapshot?
     public var deleted: Bool = false

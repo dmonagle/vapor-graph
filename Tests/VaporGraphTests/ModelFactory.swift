@@ -12,10 +12,10 @@ import Vapor
 import Foundation
 
 final class Person : Graphable {
-    var graphStorage: GraphStorage = GraphStorage()
-    let storage: Storage = Storage()
+    static let graphIdGenerator: GraphIdGenerator? = generateGraphUUID
 
-    static var graphIdGenerator: GraphIdGenerator? = generateGraphUUID
+    let graphStorage: GraphStorage = GraphStorage()
+    let storage: Storage = Storage()
 
     // MARK: Properties
     public var name : String = ""
