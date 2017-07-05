@@ -31,7 +31,7 @@ public protocol Graphable : class, Model, GraphSynchronizable, NodeRepresentable
     static var graphIdGenerator : GraphIdGenerator? { get set }
     
     var graphStorage : GraphStorage { get set }
-    func deserialize(node: NodeRepresentable, in: Context?) throws
+    func graphDeserialize(node: NodeRepresentable, in: Context?) throws
 }
 
 // MARK: Convenience
@@ -99,14 +99,14 @@ extension Graphable {
         
         let modelData = try model.makeSnapshot()
         if let changes = try self.diffFromSnapshot(), let mergedData = try modelData.merge(with: changes) {
-            try deserialize(node: mergedData, in: GraphContext.snapshot)
+            try graphDeserialize(node: mergedData, in: GraphContext.snapshot)
             if (updateSnapshot) { graphStorage.snapshot = modelData }
         }
     }
     
     public func revertToSnapshot() throws {
         guard let snap = graphStorage.snapshot else { throw GraphError.noSnapshot }
-        try self.deserialize(node: snap, in: GraphContext.snapshot)
+        try self.graphDeserialize(node: snap, in: GraphContext.snapshot)
     }
 
     /// Checks the current state of the model data against the snapshot if it exists

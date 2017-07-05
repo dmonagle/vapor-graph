@@ -30,11 +30,11 @@ final class Person : Graphable {
     }
     
     init(node: Node, in context: Context) throws {
-        try deserialize(node: node, in: context)
+        try graphDeserialize(node: node, in: context)
     }
 
     init(row: Row) throws {
-        try deserialize(node: Node(row))
+        try graphDeserialize(node: Node(row), in: GraphContext.storage)
     }
 }
 
@@ -56,8 +56,8 @@ extension Person {
 
 // MARK: Serialization
 extension Person {
-    func deserialize(node: NodeRepresentable, in context: Context? = emptyContext) throws {
-        let node = try node.makeNode(in: nil)
+    func graphDeserialize(node: NodeRepresentable, in context: Context?) throws {
+        let node = try node.makeNode(in: context)
         id = try node.get("id")
         name = try node.get("name")
         favoriteColor = try node.get("favoriteColor")

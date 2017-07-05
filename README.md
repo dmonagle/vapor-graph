@@ -24,12 +24,12 @@ class Person : Graphable {
     public var graph: Graph?
     public var snapshot: Node?
 
-    func deserialize(node: Node, in context: Context) throws {
+    public func graphDeserialize(node: NodeRepresentable, in context: Context?) throws {
         ... 
     }
 
-    init(node: Node, in context: Context) throws {
-        try deserialize(node: node, in: context)
+    init(node: Node, in context: Context?) throws {
+        try graphDeserialize(node: node, in: context)
     }
 }
 ```
@@ -57,7 +57,7 @@ class Person : Graphable {
 }
 ```
 
-The **deserialize** function plays the same role as the **Model** protocol's requirement for an **init**. The difference being that deserialize can be called on an existing reference to transform it's data to a known state. Since it has the same functionality as the required **init**, the init can be defined in your model to delegate to the **deserialize** function which can be seen above.
+The **graphDeserialize** function plays the same role as the **Model** protocol's requirement for an **init**. The difference being that graphDeserialize can be called on an existing reference to transform it's data to a known state. Since it has the same functionality as the required **init**, the init can be defined in your model to delegate to the **graphDeserialize** function which can be seen above.
 
 ### Inserting models into a Graph
 
