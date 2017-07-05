@@ -24,16 +24,12 @@ class Person : Graphable {
     public let graphStorage: GraphStorage = GraphStorage()
     public let storage: Storage = Storage()
 
-    public func graphDeserialize(node: NodeRepresentable, in context: Context?) throws {
+    public func graphDeserialize(row: Row, in context: Context?) throws {
         ... 
     }
 
-    init(node: Node, in context: Context?) throws {
-        try graphDeserialize(node: node, in: context)
-    }
-    
-    init(row: Row) throws {
-        try graphDeserialize(node: Node(row), in: GraphContext.row)
+    public init(row: Row) throws {
+        try graphDeserialize(row: row, in: GraphContext.row)
     }}
 ```
 

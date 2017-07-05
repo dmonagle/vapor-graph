@@ -75,7 +75,7 @@ public class Graph : GraphSynchronizable {
             case .keepExisting:
                 return existing
             case .deserialize:
-                try existing.graphDeserialize(node: try model.makeNode(in: GraphContext.snapshot), in: GraphContext.snapshot)
+                try existing.graphDeserialize(row: try model.makeRow(in: GraphContext.snapshot), in: GraphContext.snapshot)
                 if (takeSnapshot) { try model.takeSnapshot() }
                 return existing
             case .rebase:
