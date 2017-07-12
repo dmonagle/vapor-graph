@@ -16,6 +16,7 @@ class StructuredDataEnumTest: XCTestCase {
             ("testConvertEnumToStructuredData", testConvertEnumToStructuredData),
             ("testInitializeEnumWithStructuredData", testInitializeEnumWithStructuredData),
             ("testInitializeEnumWithStructuredData", testInitializeEnumWithStructuredData),
+            ("testEnumAssignmentFromJSON", testEnumAssignmentFromJSON),
         ]
     }
     
@@ -54,6 +55,17 @@ class StructuredDataEnumTest: XCTestCase {
         sd = JSON("blah")
         g = Greeting.init(structuredData: sd)
         XCTAssertNil(g)
+    }
+    
+    func testEnumAssignmentFromJSON() throws {
+        let sd = JSON(["greeting": "warm"])
+        var greeting : Greeting?
+        
+        try greeting =? sd["greeting"]
+        XCTAssertEqual(greeting, .warm)
+        
+        try greeting =? sd["nope"]
+        XCTAssertEqual(greeting, .warm) // Shouldn't change
     }
     
 }
