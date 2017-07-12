@@ -9,8 +9,8 @@
 import Node
 
 extension StructuredData {
-    /// Returns a node with the values of the given node merged with this node
-    func merge(with data: StructuredData) throws -> StructuredData? {
+    /// Returns a node with the values of the given node merged with this data
+    public func merge(with data: StructuredData) throws -> StructuredData? {
         // Make sure both nodes are objects
         switch (self, data) {
         case (var .object(original), let .object(toMerge)):
@@ -41,7 +41,8 @@ extension StructuredData {
 }
 
 extension StructuredDataWrapper {
-    func merge<T : StructuredDataWrapper>(with referenceWrapper: T) throws -> T? {
+    /// Returns a node with the values of the given node merged with this data
+   public func merge<T : StructuredDataWrapper>(with referenceWrapper: T) throws -> T? {
         guard let returnValue = try self.wrapped.merge(with: referenceWrapper.wrapped) else { return nil }
         return T(returnValue)
     }

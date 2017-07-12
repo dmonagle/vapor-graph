@@ -9,6 +9,7 @@
 import Vapor
 import FluentProvider
 import Foundation
+import StructuredDataGraphExtensions
 
 public protocol GraphSynchronizable {
     func needsSync() throws -> Bool

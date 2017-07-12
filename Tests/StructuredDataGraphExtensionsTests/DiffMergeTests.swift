@@ -33,7 +33,7 @@ struct NodeFactory {
     }
 }
 
-class NodeTests: XCTestCase {
+class DiffMergeTests: XCTestCase {
     func testDiff() throws {
         let (n1, n2) =  NodeFactory.testNodes()
 
@@ -61,7 +61,7 @@ class NodeTests: XCTestCase {
         XCTAssertEqual(merged["car"]?["model"]?.string, "Falcon")
     }
     
-    static var allTests : [(String, (NodeTests) -> () throws -> Void)] {
+    static var allTests : [(String, (DiffMergeTests) -> () throws -> Void)] {
         return [
             ("testDiff", testDiff),
             ("testMerge", testMerge),

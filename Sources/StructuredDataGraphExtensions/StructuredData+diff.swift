@@ -9,8 +9,8 @@
 import Node
 
 extension StructuredData {
-    /// Returns a structure outlining the differences between self and the given reference node
-    func diff(from referenceStruct: StructuredData) throws -> StructuredData? {
+    /// Returns a structure outlining the differences between self and the given reference data
+    public func diff(from referenceStruct: StructuredData) throws -> StructuredData? {
         // Make sure both nodes are objects
         switch (self, referenceStruct) {
         case let (.object(changed), .object(reference)):
@@ -64,7 +64,8 @@ extension StructuredData {
 }
 
 extension StructuredDataWrapper {
-    func diff<T : StructuredDataWrapper>(from referenceWrapper: T) throws -> T? {
+    /// Returns a structure outlining the differences between self and the given reference data
+    public func diff<T : StructuredDataWrapper>(from referenceWrapper: T) throws -> T? {
         guard let returnValue = try self.wrapped.diff(from: referenceWrapper.wrapped) else { return nil }
         return T(returnValue)
     }
