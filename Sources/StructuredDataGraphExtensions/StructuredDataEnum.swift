@@ -12,7 +12,7 @@ extension StructuredDataEnum {
         self = value
     }
     
-    public func toStructuredData<T>() throws -> T where T : StructuredDataWrapper {
+    public func makeStructuredData<T>() throws -> T where T : StructuredDataWrapper {
         return T(rawValue)
     }
 }

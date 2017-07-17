@@ -43,7 +43,7 @@ class StructuredDataEnumTest: XCTestCase {
     func testConvertEnumToStructuredData() throws {
         let g = Greeting.prefunctory
         
-        let sd : JSON = try g.toStructuredData()
+        let sd : JSON = try g.makeStructuredData()
         XCTAssertEqual(sd.string, "prefunctory")
     }
     

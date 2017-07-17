@@ -13,22 +13,22 @@ import JSON
 
 
 public protocol StructuredDataRepresentable : JSONRepresentable, RowRepresentable, NodeRepresentable {
-    func toStructuredData<T>() throws -> T where T : StructuredDataWrapper
+    func makeStructuredData<T>() throws -> T where T : StructuredDataWrapper
 }
 
 extension StructuredDataRepresentable {
-    public func makeNode() throws -> Node {
-        let value : Node = try toStructuredData()
+    public func makeNode(in context: Context?) throws -> Node {
+        let value : Node = try makeStructuredData()
         return value
     }
     
     public func makeJSON() throws -> JSON {
-        let value : JSON = try toStructuredData()
+        let value : JSON = try makeStructuredData()
         return value
     }
     
     public func makeRow() throws -> Row {
-        let value : Row = try toStructuredData()
+        let value : Row = try makeStructuredData()
         return value
     }
 }
