@@ -25,6 +25,9 @@ public class Graph : GraphSynchronizable {
         case replaceReference
     }
     
+    // Defines a priority for syncing each model type. These will be done first, in order and then any other models in the store will be done at random.
+    public static var ModelSyncOrder : [String] = []
+    
     public init() {
     }
     
@@ -160,8 +163,13 @@ public class Graph : GraphSynchronizable {
             - force: If set to true, will save each model whether or not it returns true to `needsSync`. Use with care when doing this across the entire graph
     */
     public func sync(executor: Executor? = nil, force: Bool) throws {
-        try _store.forEach { _, store in
-            try store.sync(executor: executor, force: force)
+        var syncKeys = type(of: self).ModelSyncOrder
+        for key in _store.keys { if !syncKeys.contains(key) { syncKeys.append(key) } }
+        
+        for modelType in syncKeys {
+            if let store = _store[modelType] {
+                try store.sync(executor: executor, force: force)
+            }
         }
     }
     
