@@ -76,9 +76,9 @@ public class GraphModelStore : GraphSynchronizable {
         return result
     }
     
-    public func sync(force: Bool) throws {
+    public func sync(executor: Executor?, force: Bool) throws {
         try _models.forEach { id, model in
-            try model.sync(force: force)
+            try model.sync(executor: executor, force: force)
         }
     }
 }

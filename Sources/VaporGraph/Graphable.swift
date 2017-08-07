@@ -13,13 +13,13 @@ import StructuredDataGraphExtensions
 
 public protocol GraphSynchronizable {
     func needsSync() throws -> Bool
-    func sync(force: Bool) throws
+    func sync(executor: Executor?, force: Bool) throws
 }
 
 extension GraphSynchronizable {
     /// Default implementation of `sync(force)` which defaults `force` to `false`
-    public func sync() throws {
-        try sync(force: false)
+    public func sync(executor: Executor?) throws {
+        try sync(executor: executor, force: false)
     }
 }
 
@@ -132,7 +132,7 @@ extension Graphable {
     
     
     /// Syncs this model with it's underlying database (if requried or forced) and takes a snapshot
-    public func sync(force: Bool) throws {
+    public func sync(executor: Executor? = nil, force: Bool) throws {
         if try (force || needsSync()) {
             do {
                 let model = self
@@ -141,7 +141,8 @@ extension Graphable {
                     model.graph?.remove(model) // Remove the model from the graph
                 }
                 else {
-                    try model.save()
+                    let executor = try executor ?? model.makeExecutor()
+                    try model.makeQuery(executor).save()
                     try model.takeSnapshot()
                 }
             }

@@ -159,9 +159,9 @@ public class Graph : GraphSynchronizable {
         - Parameters:
             - force: If set to true, will save each model whether or not it returns true to `needsSync`. Use with care when doing this across the entire graph
     */
-    public func sync(force: Bool) throws {
+    public func sync(executor: Executor? = nil, force: Bool) throws {
         try _store.forEach { _, store in
-            try store.sync(force: force)
+            try store.sync(executor: executor, force: force)
         }
     }
     
