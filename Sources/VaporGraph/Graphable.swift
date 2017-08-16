@@ -43,6 +43,9 @@ extension Graphable {
         get { return graphStorage.graph }
         set { graphStorage.graph = newValue }
     }
+    public var snapshot : GraphSnapshot? {
+        get { return graphStorage.snapshot }
+    }
 }
 
 // MARK: Deletable
