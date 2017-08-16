@@ -162,7 +162,7 @@ public class Graph : GraphSynchronizable {
      - Parameters:
      - force: If set to true, will save each model whether or not it returns true to `needsSync`. Use with care when doing this across the entire graph
      */
-    public func sync(executor: Executor? = nil, force: Bool) throws {
+    public func sync(executor: Executor? = nil, force: Bool = false) throws {
         var syncKeys = type(of: self).ModelSyncOrder
         for key in _store.keys { if !syncKeys.contains(key) { syncKeys.append(key) } }
         
