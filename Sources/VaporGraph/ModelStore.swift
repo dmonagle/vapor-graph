@@ -27,7 +27,7 @@ public class GraphModelStore : GraphSynchronizable {
         var results: [T] = []
         
         _models.forEach { model in
-            if let m = model as? T {
+            if let m = model.value as? T {
                 if (filterFunc(m)) {
                     results.append(m)
                 }
