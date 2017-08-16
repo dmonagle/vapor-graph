@@ -10,6 +10,7 @@ import Foundation
 
 public enum GraphError : Error {
     case noId
+    case noGraph
     case wrongType
     case noSnapshot
     case sync(Graphable, Error)
