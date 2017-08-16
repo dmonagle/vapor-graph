@@ -17,7 +17,7 @@ public class Graph : GraphSynchronizable {
      
      # replaceReference
      Replace the current reference with the new one. This could leave other classes with references to a model that no longer exists in the graph. Not really recommended
-    */
+     */
     public enum DuplicateResolution {
         case rebase
         case deserialize
@@ -33,29 +33,29 @@ public class Graph : GraphSynchronizable {
     
     private var _store : [String: GraphModelStore] = [:]
     public var context : Context = emptyContext
-
+    
     public func store<T>(forType: T.Type) -> GraphModelStore? where T : Entity {
         return _store[forType.entity]
     }
     
     /**
-        Injects a model into the graph.
+     Injects a model into the graph.
      
-        If the id of the model already exists in the graph, the `duplicateResolution` is used to determine how to proceed.
+     If the id of the model already exists in the graph, the `duplicateResolution` is used to determine how to proceed.
      
-        - Parameters:
-            - model: A `Graphable` model
-            - duplicateResolution: Specifies how to deal with a duplicate id being inserted
-            - takeSnapshot: If set to `true`, a snapshot will be taken of the model after it is inserted into the graph. 
-                The snapshot is supposed to represent the model's last known state in the database so this parameter is 
-                usually set to `true` when inserting the result of a database query.
+     - Parameters:
+     - model: A `Graphable` model
+     - duplicateResolution: Specifies how to deal with a duplicate id being inserted
+     - takeSnapshot: If set to `true`, a snapshot will be taken of the model after it is inserted into the graph.
+     The snapshot is supposed to represent the model's last known state in the database so this parameter is
+     usually set to `true` when inserting the result of a database query.
      
-        - Returns:
-            A reference to the injected model. This may not be the same as the reference passed in if the id was a duplicate of a model already in the graph.
+     - Returns:
+     A reference to the injected model. This may not be the same as the reference passed in if the id was a duplicate of a model already in the graph.
      */
     public func inject<T>(_ model : T, duplicateResolution: DuplicateResolution = .rebase, takeSnapshot: Bool = false) throws -> T where T : Graphable{
         let id : Identifier
-
+        
         if let modelId = model.id {
             id = modelId
         }
@@ -66,7 +66,7 @@ public class Graph : GraphSynchronizable {
             // Add the generated id to the model
             model.id = Identifier(id)
         }
-
+        
         let store = ensureStore(model: model)
         
         // If the model, according to it's id, already exists in the store, we need to return the reference already in the graph
@@ -98,8 +98,8 @@ public class Graph : GraphSynchronizable {
     }
     
     /** Injects multiple models into the graph
-        - Returns: An array containing the references of the injected models. This may not be identical to the array passed in due to duplicate handling.
-    */
+     - Returns: An array containing the references of the injected models. This may not be identical to the array passed in due to duplicate handling.
+     */
     public func inject<T>(_ models : [T], duplicateResolution: DuplicateResolution = .rebase, takeSnapshot: Bool = false) throws -> [T] where T : Graphable {
         var results : [T] = []
         
@@ -110,27 +110,27 @@ public class Graph : GraphSynchronizable {
         return results
     }
     
-    /// Removes a model from the graph. 
-    func remove<T : Graphable>(_ model : T) {
+    /// Removes a model from the graph.
+    public func remove<T : Graphable>(_ model : T) {
         _store[T.entity]?.remove(model)
         model.graph = nil
     }
     
     /// Retrieves an object from the Graph
-    func retrieve<T : Graphable>(id: Identifier) -> T? {
+    public func retrieve<T : Graphable>(id: Identifier) -> T? {
         let result : T? = _store[T.entity]?.retrieve(id: id)
         return result
     }
     
     /// Looks for the given id in the Graph. If it's not present it will search the database for it and, if found, add it to the Graph
-    func find<T : Graphable>(id: Identifier, duplicateResolution: DuplicateResolution = .rebase) throws -> T? {
+    public func find<T : Graphable>(id: Identifier, duplicateResolution: DuplicateResolution = .rebase) throws -> T? {
         if let result : T = retrieve(id: id) { return result }
         guard let result = try T.find(id) else { return nil }
         return try self.inject(result, duplicateResolution: duplicateResolution, takeSnapshot: true)
     }
     
     /// Convenience: Queries the database for the model with the filter value and returns the result of injecting them into the graph with the given duplication resolution
-    func findMany<T>(field: String, value: NodeRepresentable, duplicateResolution: DuplicateResolution = .rebase) throws -> [T] where T : Graphable {
+    public func findMany<T>(field: String, value: NodeRepresentable, duplicateResolution: DuplicateResolution = .rebase) throws -> [T] where T : Graphable {
         return try inject(T.makeQuery().filter(field, value).all(), duplicateResolution: duplicateResolution, takeSnapshot: true)
     }
     
@@ -141,10 +141,10 @@ public class Graph : GraphSynchronizable {
     // MARK: GraphSynchronizable
     
     /**
-        Check all stores to see if any model needs synchronization
+     Check all stores to see if any model needs synchronization
      
-        - Returns: `true` if any model in any store needs synchronization
-    */
+     - Returns: `true` if any model in any store needs synchronization
+     */
     public func needsSync() throws -> Bool {
         var result = false
         try _store.forEach { _, store in
@@ -155,13 +155,13 @@ public class Graph : GraphSynchronizable {
         }
         return result
     }
-
+    
     /**
-        Sync all models across all stores
+     Sync all models across all stores
      
-        - Parameters:
-            - force: If set to true, will save each model whether or not it returns true to `needsSync`. Use with care when doing this across the entire graph
-    */
+     - Parameters:
+     - force: If set to true, will save each model whether or not it returns true to `needsSync`. Use with care when doing this across the entire graph
+     */
     public func sync(executor: Executor? = nil, force: Bool) throws {
         var syncKeys = type(of: self).ModelSyncOrder
         for key in _store.keys { if !syncKeys.contains(key) { syncKeys.append(key) } }
@@ -174,7 +174,7 @@ public class Graph : GraphSynchronizable {
     }
     
     // MARK: Private
-
+    
     /// Returns the store for the named `entityName` if it exists or creates it if it doesn't
     private func ensureStore(entityName: String) -> GraphModelStore {
         guard let store = _store[entityName] else {
