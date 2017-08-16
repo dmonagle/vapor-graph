@@ -163,7 +163,7 @@ public class Graph : GraphSynchronizable {
      Sync all models across all stores
      
      - Parameters:
-     - force: If set to true, will save each model whether or not it returns true to `needsSync`. Use with care when doing this across the entire graph
+        - force: If set to true, will save each model whether or not it returns true to `needsSync`. Use with care when doing this across the entire graph
      */
     public func sync(executor: Executor? = nil, force: Bool = false) throws {
         var syncKeys = type(of: self).ModelSyncOrder
