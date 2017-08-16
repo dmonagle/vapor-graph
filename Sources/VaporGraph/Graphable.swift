@@ -141,7 +141,7 @@ extension Graphable {
     }
     
     
-    /// Syncs this model with it's underlying database (if requried or forced) and takes a snapshot
+    /// Syncs this model with it's underlying database (if required or forced) and takes a snapshot
     public func sync(executor: Executor? = nil, force: Bool = false) throws {
         if try (force || needsSync()) {
             do {
