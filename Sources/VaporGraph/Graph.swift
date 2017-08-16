@@ -44,17 +44,20 @@ public class Graph : GraphSynchronizable {
      If the id of the model already exists in the graph, the `duplicateResolution` is used to determine how to proceed.
      
      - Parameters:
-     - model: A `Graphable` model
-     - duplicateResolution: Specifies how to deal with a duplicate id being inserted
-     - takeSnapshot: If set to `true`, a snapshot will be taken of the model after it is inserted into the graph.
-     The snapshot is supposed to represent the model's last known state in the database so this parameter is
-     usually set to `true` when inserting the result of a database query.
+         - model: A `Graphable` model
+         - duplicateResolution: Specifies how to deal with a duplicate id being inserted
+         - takeSnapshot: If set to `true`, a snapshot will be taken of the model after it is inserted into the graph. If set to `false`, the model
+         is injected without a snapshot. If it's set to `nil` (default) a snapshot will be taken if model.exists is true (ie: it exists in the database).
+         The snapshot is supposed to represent the model's last known state in the database so a snapshot is normally desired when inserting the result of a 
+         database query.
      
      - Returns:
      A reference to the injected model. This may not be the same as the reference passed in if the id was a duplicate of a model already in the graph.
      */
-    public func inject<T>(_ model : T, duplicateResolution: DuplicateResolution = .rebase, takeSnapshot: Bool = false) throws -> T where T : Graphable{
+    public func inject<T>(_ model : T, duplicateResolution: DuplicateResolution = .rebase, takeSnapshot: Bool? = nil) throws -> T where T : Graphable{
         let id : Identifier
+        
+        let takeSnapshot = takeSnapshot ?? model.exists // If takeSnapshot parameter was nil, this causes it to be set to true if the model exists in the database
         
         if let modelId = model.id {
             id = modelId
