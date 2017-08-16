@@ -43,8 +43,15 @@ extension Graphable {
         get { return graphStorage.graph }
         set { graphStorage.graph = newValue }
     }
+ 
     public var snapshot : GraphSnapshot? {
         get { return graphStorage.snapshot }
+    }
+    
+    /// Returns a Graph object if it is set, otherwise throws GraphError.noGraph
+    public func enforceGraph() throws -> Graph {
+        guard let graph = graph else { throw GraphError.noGraph }
+        return graph
     }
 }
 
