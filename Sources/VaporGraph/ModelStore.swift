@@ -17,7 +17,7 @@ extension Identifier : Hashable {
 
 /// Stores a single type of Graphable
 public class GraphModelStore : GraphSynchronizable {
-    private var _models : [Identifier: Graphable] = [:]
+    internal var _models : [Identifier: Graphable] = [:]
     
     public init() {
     }
@@ -39,9 +39,7 @@ public class GraphModelStore : GraphSynchronizable {
 
     /// Returns all the models in the store that can be cast to T
     public func all<T>() throws -> [T] where T: Graphable {
-        return try filter { _ in
-            return true
-        }
+        return try filter { _ in true }
     }
     
     public func add(_ model : Graphable) throws {

@@ -34,7 +34,13 @@ open class Graph : GraphSynchronizable {
     }
     
     // Defines a priority for syncing each model type. These will be done first, in order and then any other models in the store will be done at random.
-    public static var ModelSyncOrder : [String] = []
+    static public var ModelSyncOrder : [String] = []
+    
+    public var storeNames : [String] {
+        get {
+            return _store.keys.array
+        }
+    }
     
     public init() {
     }
@@ -45,6 +51,10 @@ open class Graph : GraphSynchronizable {
     
     public func store<T>(forType: T.Type) -> GraphModelStore? where T : Entity {
         return _store[forType.entity]
+    }
+
+    public func store(forType name: String) -> GraphModelStore? {
+        return _store[name]
     }
     
     /**
@@ -187,6 +197,29 @@ open class Graph : GraphSynchronizable {
         }
         
         syncDelegate?.graphDidSync()
+    }
+    
+    public func forEach(_ body: (Graphable) throws -> Void) rethrows {
+        try _store.forEach { _, store in
+            try store._models.forEach { _, model in
+                try body(model)
+            }
+        }
+    }
+    
+    /// Returns all the models in the stores that can be cast to T and pass the given filter function
+    public func filter<T>(_ filterFunc: (T) -> Bool) -> [T] where T: Graphable {
+        var results: [T] = []
+        
+        forEach { model in
+            if let m = model as? T {
+                if (filterFunc(m)) {
+                    results.append(m)
+                }
+            }
+        }
+        
+        return results
     }
     
     // MARK: Private
