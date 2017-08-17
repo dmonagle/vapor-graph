@@ -2,6 +2,14 @@ import Vapor
 import FluentProvider
 import Foundation
 
+/**
+    Implements callbacks for the Graph sync lifecycle
+ */
+public protocol GraphSyncDelegate {
+    func graphWillSync() throws
+    func graphDidSync()
+}
+
 open class Graph : GraphSynchronizable {
     /**
      Determines how a model with an id that already exists in the Graph will be treated when an attempt is made to inject it.
@@ -33,6 +41,7 @@ open class Graph : GraphSynchronizable {
     
     private var _store : [String: GraphModelStore] = [:]
     public var context : Context = emptyContext
+    public var syncDelegate : GraphSyncDelegate? = nil
     
     public func store<T>(forType: T.Type) -> GraphModelStore? where T : Entity {
         return _store[forType.entity]
@@ -166,6 +175,8 @@ open class Graph : GraphSynchronizable {
         - force: If set to true, will save each model whether or not it returns true to `needsSync`. Use with care when doing this across the entire graph
      */
     public func sync(executor: Executor? = nil, force: Bool = false) throws {
+        try syncDelegate?.graphWillSync()
+
         var syncKeys = type(of: self).ModelSyncOrder
         for key in _store.keys { if !syncKeys.contains(key) { syncKeys.append(key) } }
         
@@ -174,6 +185,8 @@ open class Graph : GraphSynchronizable {
                 try store.sync(executor: executor, force: force)
             }
         }
+        
+        syncDelegate?.graphDidSync()
     }
     
     // MARK: Private
