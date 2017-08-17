@@ -2,7 +2,7 @@ import Vapor
 import FluentProvider
 import Foundation
 
-public class Graph : GraphSynchronizable {
+open class Graph : GraphSynchronizable {
     /**
      Determines how a model with an id that already exists in the Graph will be treated when an attempt is made to inject it.
      
