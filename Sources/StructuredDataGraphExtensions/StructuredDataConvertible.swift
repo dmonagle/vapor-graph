@@ -62,6 +62,6 @@ infix operator =?
 /// Deserializes the value of the data at the given path into the given target as long as it's not nil
 public func =?<T,W>(left: inout T, data: W?) throws where W : StructuredDataWrapper {
     guard let data = data else { return } // No assignment if the data is nil
-    try left = data.get("")
+    if data.isNull { return }
+    try left = data.get()
 }
-
