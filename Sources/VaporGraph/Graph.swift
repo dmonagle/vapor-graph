@@ -6,7 +6,7 @@ import Foundation
     Implements callbacks for the Graph sync lifecycle
  */
 public protocol GraphSyncDelegate {
-    func graphWillSync() throws
+    func graphWillSync(forced: Bool) throws
     func graphDidSync()
 }
 
@@ -185,7 +185,7 @@ open class Graph : GraphSynchronizable {
         - force: If set to true, will save each model whether or not it returns true to `needsSync`. Use with care when doing this across the entire graph
      */
     public func sync(executor: Executor? = nil, force: Bool = false) throws {
-        try syncDelegate?.graphWillSync()
+        try syncDelegate?.graphWillSync(forced: force)
 
         var syncKeys = type(of: self).ModelSyncOrder
         for key in _store.keys { if !syncKeys.contains(key) { syncKeys.append(key) } }
