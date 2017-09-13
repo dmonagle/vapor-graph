@@ -29,7 +29,10 @@ class StructuredDataEnumTest: XCTestCase {
         
         try string =? json["Hello"]
         XCTAssertEqual(string, "Goodbye")
-        
+
+        try string =? json["null"]
+        XCTAssertEqual(string, "Goodbye")
+
         var nString : String?
         
         try nString =? json["Blah"]

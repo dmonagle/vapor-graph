@@ -59,9 +59,12 @@ public protocol StructuredDataConvertible : StructuredDataRepresentable, Structu
 
 infix operator =?
 
+private protocol OptionalProtocol {}
+extension Optional : OptionalProtocol {}
+
 /// Deserializes the value of the data at the given path into the given target as long as it's not nil
 public func =?<T,W>(left: inout T, data: W?) throws where W : StructuredDataWrapper {
     guard let data = data else { return } // No assignment if the data is nil
-    if data.isNull { return }
+    if data.isNull && !(T.self is OptionalProtocol.Type) { return } // Can only assign null if T is an optional
     try left = data.get()
 }
