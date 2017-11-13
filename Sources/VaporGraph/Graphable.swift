@@ -135,6 +135,7 @@ extension Graphable {
     /// Checks the current state of the model data against the snapshot if it exists
     /// - Returns: true if syncing is required or if there is no snapshot present
     public func needsSync() throws -> Bool {
+        if isGraphDeleted { return true }
         guard let snapshot = graphStorage.snapshot else { return true }
         let currentState = try self.makeSnapshot()
         return currentState != snapshot
