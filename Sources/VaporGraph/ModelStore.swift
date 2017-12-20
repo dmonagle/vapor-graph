@@ -11,7 +11,8 @@ import Foundation
 
 extension Identifier : Hashable {
     public var hashValue: Int {
-        return "\(self)".hashValue
+        guard let stringValue = self.string else { return 0 }
+        return stringValue.hashValue
     }
 }
 
@@ -54,6 +55,7 @@ public class GraphModelStore : GraphSynchronizable {
     }
     
     public func retrieve<T: Graphable>(id: Identifier) -> T? {
+        print("Retrieving id: \(id)")
         guard let graphable = _models[id] else { return nil }
         guard let model = (graphable as? T) else { return nil }
         return model
