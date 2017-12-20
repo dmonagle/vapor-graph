@@ -55,7 +55,6 @@ public class GraphModelStore : GraphSynchronizable {
     }
     
     public func retrieve<T: Graphable>(id: Identifier) -> T? {
-        print("Retrieving id: \(id)")
         guard let graphable = _models[id] else { return nil }
         guard let model = (graphable as? T) else { return nil }
         return model
