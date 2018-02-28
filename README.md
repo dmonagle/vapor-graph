@@ -18,26 +18,42 @@ As Vapor and Fluent are rapidly changing, I did not want to have too many assump
 The **Graphable** protocol allows your models to be stored in a Graph. It also implements the **Model** protocol from Vapor. In addition to the requirements of **Model**, **Graphable** would look something like this:
 
 ```Swift
-class Person : Graphable {
+import VaporGraph // For the Graphable protocol
+import Fluent     // For the Row type
+import StructuredDataGraphExtensions // For the =? operator
+
+final class Person : Graphable {
     public static var graphIdGenerator: GraphIdGenerator? = generateGraphUUID
 
     public let graphStorage: GraphStorage = GraphStorage()
     public let storage: Storage = Storage()
 
+    // MARK: Model Properties
+    public var name : String = ""
+
     public func graphDeserialize(row: Row, in context: Context?) throws {
-        ... 
+        try name =? row["name"]
+    }
+
+    public func makeRow(in context: Context?) throws -> Row {
+        var row = Row()
+
+        try row.set("name", name)
+
+        return row
     }
 
     public init(row: Row) throws {
         try graphDeserialize(row: row, in: GraphContext.row)
-    }}
+    }
+}
 ```
 
-Note that each of the variables are optional so there is no need to initialise them in any way.
+The **graphStorage** is used by some of the Graphable extension functions to store a reference to the graph the model belongs to, and take snapshots for tracking changes.
 
-The graph and snapshot are used by some of the Graphable extension functions to store a reference to the graph the model belongs to, and take snapshots for tracking changes.
+The **storage** var is required for the Fluent model.
 
-The graphIdGenerator is optional to use. Nothing can be stored in the graph without an id however so if you wish to add models to the graph before you save them for the first time, you will need to either manually set the id before insertion, or set the graphIdGenerator. The signature for the GraphIdGenerator type looks as follows:
+The **graphIdGenerator** is optional to use. Nothing can be stored in the graph without an id however so if you wish to add models to the graph before you save them for the first time, you will need to either manually set the id before insertion, or set the graphIdGenerator. The signature for the GraphIdGenerator type looks as follows:
 
 ```Swift
     public typealias GraphIdGenerator = (Graphable.Type) throws -> String
@@ -51,12 +67,16 @@ So it's just a function that takes a Graphable.Type and returns a String. This c
 You can use these as simply as:
 
 ```Swift
-class Person : Graphable {
+final class Person : Graphable {
+    ...
     static var graphIdGenerator: GraphIdGenerator? = generateGraphUUID
+    ...
 }
 ```
 
-The **graphDeserialize** function plays the same role as the **Model** protocol's requirement for an **init**. The difference being that graphDeserialize can be called on an existing reference to transform it's data to a known state. Since it has the same functionality as the required **init**, the init can be defined in your model to delegate to the **graphDeserialize** function which can be seen above.
+The **graphDeserialize** function plays a similar role as the **Model** protocol's requirement for an **init**. The differences being that graphDeserialize can be called on an existing reference to transform existing data from a row. Note: If graphDeserialize is given a row that is missing a key that you would normally associate with a value, **it is very important that you do not alter your property for this key**. This is to ensure correct merging behaviour when loading data from the database. In the above example, the =? operator is used to conditionally set the left hand side only if the key is present for the row on the right hand side. This operator is defined in  the module StructuredDataGraphExtensions.
+
+The init to satisfy the **Model** can be defined in your model to delegate to the **graphDeserialize** function as seen above. Bear in mind that, due to the fact that graphDeserialize might not set every property, all vars must either have default values, or they need to be set to a default value in the init before graphDeserialize is called.
 
 ### Inserting models into a Graph
 
